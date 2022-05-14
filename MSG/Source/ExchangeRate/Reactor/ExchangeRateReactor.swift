@@ -10,18 +10,19 @@ final class ExchangeRateReactor: Reactor,Stepper{
     var steps: PublishRelay<Step> = .init()
     
     enum Action{
-        //case remitCountryButtonDidTap
+        case remitCountryButtonDidTap
         case updateRemitCountry(Country)
-        //case remitReceiptButtonDidTap
+        case remitReceiptButtonDidTap
         case updateReceiptCountry(Country)
         case updateRemitAmount(Int)
         case exchangeRateButtonDidTap
+        case fetchExchangeRate
     }
     enum Mutation{
         case setRemitCountry(Country)
         case setReceiptCountry(Country)
         case setRemitAmount(Int)
-        case setExchangeItem([ExchangeRateItem])
+        case setExchangeItem(_ exchangeItem: [ExchangeRateItem])
     }
     struct State{
         var remitCountry: Country
@@ -45,18 +46,20 @@ final class ExchangeRateReactor: Reactor,Stepper{
 extension ExchangeRateReactor{
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        /*case .remitCountryButtonDidTap:
+        case .remitCountryButtonDidTap:
             steps.accept(TestStep.countryIsRequired)
         case let .updateRemitCountry(country):
             return .just(.setRemitCountry(country))
         case .remitReceiptButtonDidTap:
-            steps.accept(TestStep.countryIsRequired)*/
+            steps.accept(TestStep.countryIsRequired)
         case let .updateReceiptCountry(country):
             return .just(.setReceiptCountry(country))
         case let .updateRemitAmount(remitAmount):
             return .just(.setRemitAmount(remitAmount))
         case .exchangeRateButtonDidTap:
             steps.accept(TestStep.exchangeRateIsRequired)
+        case .fetchExchangeRate:
+            return fetchExchangeRate()
         default:
             return .empty()
         }
@@ -76,16 +79,35 @@ extension ExchangeRateReactor{
         case let .setExchangeItem(items):
             newState.exchangeItems = items
         }
-        newState.isFilled = checkValidation(newState)
+        newState.isFilled = checkIsFilled(newState)
         return newState
     }
 }
 private extension ExchangeRateReactor{
-    func checkValidation(_ state: State) -> Bool{
-        guard !state.remitAmount.words.isEmpty
+    func checkIsFilled(_ state: State) -> Bool{
+        guard !state.remitCountry.display.isEmpty,
+              !state.receiptCountry.display.isEmpty
         else {
             return false
         }
         return true
     }
+    func fetchExchangeRate() -> Observable<Mutation>{
+        let exchange = Query(from: currentState.remitCountry.rawValue, to: currentState.receiptCountry.rawValue, amount: currentState.remitAmount)
+        NetworkManager.shared.fetchExchangeRate(exchangeRate: Query(from: exchange.from, to: exchange.to, amount: exchange.amount))
+            .asObservable()
+            .subscribe(onNext: { [weak self] res in
+                switch res.statusCode{
+                case 200:
+                    print("Login Success")
+                case 400:
+                    self?.steps.accept(TestStep.alert(title: "Error", message: "다시하셈 ㅋ"))
+                default:
+                    print(res.statusCode)
+                    break
+                }
+            })
+        return .empty()
+    }
 }
+                 

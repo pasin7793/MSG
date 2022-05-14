@@ -14,7 +14,7 @@ final class UserDefaultsLocal{
     
     var remitCountry: Country{
         get {
-            Country(rawValue: preferences.string(forKey: forKeys.remitCountry) ?? "") ?? .usd
+            Country(rawValue: preferences.string(forKey: forKeys.remitCountry) ?? "") ?? .USD
         }
         set {
             preferences.set(newValue.rawValue, forKey: forKeys.remitCountry)
@@ -22,7 +22,7 @@ final class UserDefaultsLocal{
     }
     var receiptCountry: Country{
         get {
-            Country(rawValue: preferences.string(forKey: forKeys.receiptCountry) ?? "") ?? .krw
+            Country(rawValue: preferences.string(forKey: forKeys.receiptCountry) ?? "") ?? .KRW
         }
         set {
             preferences.set(newValue.rawValue, forKey: forKeys.receiptCountry)

@@ -7,20 +7,24 @@
 
 import UIKit
 
-struct ExchangeRateResponse: Codable{
-    let response: ExchangeResponse
-}
-
-struct ExchangeResponse: Codable{
-    let body: ExchangeBody
-}
-
-struct ExchangeBody: Codable{
+// MARK: - Info
+struct ExchangeRateItemResponse: Codable{
     let items: [ExchangeRateItem]?
+}
+struct Info: Codable {
+    let timestamp: Int
+    let quote: Double
+}
+
+// MARK: - Query
+struct Query: Codable {
+    let from: String
+    let to: String
+    let amount: Int
 }
 struct ExchangeRateItem: Codable {
     let success: Bool
-    let timestamp: Int
-    let source: String
-    let quotes: [String: Double]
+    let query: Query
+    let info: Info
+    let result: Double
 }

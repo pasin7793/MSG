@@ -1,22 +1,22 @@
 
-enum Country: String, CaseIterable{
-    case krw = "KRW"
-    case usd = "USD"
-    case jpy = "JPY"
-    case php = "php"
+public enum Country: String, CaseIterable{
+    case KRW = "KRW"
+    case USD = "USD"
+    case JPY = "JPY"
+    case PHP = "PHP"
 }
 
-extension Country{
+public extension Country{
     var display: String{
         switch self {
-        case .krw:
+        case .KRW:
             return "KRW"
-        case .usd:
-            return "UDS"
-        case .jpy:
+        case .USD:
+            return "USD"
+        case .JPY:
             return "JPY"
-        case .php:
-            return "JPY"
+        case .PHP:
+            return "PHP"
         }
     }
 }

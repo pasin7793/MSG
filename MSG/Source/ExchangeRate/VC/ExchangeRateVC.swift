@@ -17,6 +17,8 @@ import RxRelay
 final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     //MARK: -Properties
+    
+    var exchangeRate: [ExchangeRateItem]?
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
@@ -28,8 +30,10 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     private let bounds = UIScreen.main.bounds
     
     private let pickerView = UIPickerView()
-    private var pickerData = ["USD","KRD","JPY","PHP"]
+    private var pickerData = ["\(Country.USD)","\(Country.KRW)","\(Country.JPY)","\(Country.PHP)"]
     
+    private let toolBar = UIToolbar()
+    private let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(DoneButton(_:)))
     
     private let remitCountryLabel = UILabel().then{
         $0.text = "송금 국가 :"
@@ -67,38 +71,43 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     }
     
     private let remitCountryValue = UITextField().then{
-        $0.text = "asd2"
+        
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
     
     private let receiptCountryValue = UITextField().then{
-        $0.text = "asd3"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
     
     private let exchangeRateValueLabel = UILabel().then{
-        $0.text = "asd4"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
     
     private let timeValueLabel = UILabel().then{
-        $0.text = "asd5"
+        $0.text = "123"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
+    let timeInterval = NSDate().timeIntervalSince1970
     
-    private let costValueTextField = UITextField().then{
-        $0.text = "asd6"
+    private let costValueUnit = UILabel().then{
+        
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
+    }
+    private let costValueTextField = UITextField().then{
+        $0.text = "0"
+        $0.font = UIFont(name: "SFPro-Regular", size: 16)
+        $0.textColor = .black
+        $0.textAlignment = .center
     }
     
     private let exchangeRateButton = UIButton().then{
@@ -107,19 +116,23 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.layer.cornerRadius = 10
         $0.setTitleColor(UIColor.white, for: .normal)
     }
-    
     override func setUp() {
         pickerView.delegate = self
         pickerView.dataSource = self
         
         remitCountryValue.delegate = self
         remitCountryValue.inputView = pickerView
+        remitCountryValue.inputAccessoryView = toolBar
         
         receiptCountryValue.delegate = self
         receiptCountryValue.inputView = pickerView
+        receiptCountryValue.inputAccessoryView = toolBar
+        
+        toolBar.sizeToFit()
+        toolBar.setItems([doneButton], animated: true)
     }
     override func addView(){
-        [mainLabel,remitCountryLabel,remitCountryValue,receiptCountryLabel,receiptCountryValue,exchangeRateLabel,exchangeRateValueLabel,timeLabel,timeValueLabel,costLabel,costValueTextField,exchangeRateButton].forEach{ view.addSubview($0)
+        [mainLabel,remitCountryLabel,remitCountryValue,receiptCountryLabel,receiptCountryValue,exchangeRateLabel,exchangeRateValueLabel,timeLabel,timeValueLabel,costLabel,costValueTextField,costValueUnit,exchangeRateButton].forEach{ view.addSubview($0)
         }
     }
     override func setLayout() {
@@ -173,6 +186,11 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         }
         costValueTextField.snp.makeConstraints { make in
             make.top.equalTo(costLabel)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(135)
+        }
+        costValueUnit.snp.makeConstraints { make in
+            make.top.equalTo(costValueTextField)
             make.trailing.equalToSuperview().offset(rightMargin)
         }
     }
@@ -181,30 +199,45 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         
         UserDefaults.standard.rx.observe(String.self, UserDefaultsLocal.forKeys.remitCountry)
             .compactMap{ $0 }
-            .map { Country(rawValue: $0) ?? .usd}
+            .map { Country(rawValue: $0) ?? .USD}
             .map (Reactor.Action.updateRemitCountry)
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         UserDefaults.standard.rx.observe(String.self, UserDefaultsLocal.forKeys.receiptCountry)
             .compactMap{ $0 }
-            .map { Country(rawValue: $0) ?? .usd}
+            .map { Country(rawValue: $0) ?? .USD}
             .map (Reactor.Action.updateReceiptCountry)
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map{ $0.isFilled}
-            .distinctUntilChanged()
-            .map{ "\($0)" }
-            .bind(to: costValueTextField.rx.text)
-            .disposed(by: disposeBag)
     }
     override func bindAction(reactor: ExchangeRateReactor) {
         exchangeRateButton.rx.tap
             .map{ Reactor.Action.exchangeRateButtonDidTap}
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        remitCountryValue.rx.controlEvent(.editingDidEnd)
+            .withUnretained(self)
+            .subscribe(onNext: { text in
+                self.costValueUnit.text = "\(self.remitCountryValue.text!)"
+            }).disposed(by: disposeBag)
+    }
+    override func bindState(reactor: ExchangeRateReactor) {
+        let sharedState = reactor.state.share(replay: 1).observe(on: MainScheduler.asyncInstance)
+        
+       
+    }
+    func bind(_ model: Query) {
+        remitCountryValue.text = model.from
+        receiptCountryValue.text = model.to
+        
+    }
+    //MARK: -Action
+    @objc func DoneButton(_ sender: Any){
+        self.view.endEditing(true)
+        
     }
 }
 

@@ -11,22 +11,22 @@ import RxCocoa
 import RxRelay
 import ReactorKit
 
-struct ExchangeRateStepper: Stepper{
+struct ResultStepper: Stepper{
     let steps: PublishRelay<Step> = .init()
     
     var initialStep: Step{
-        return TestStep.exchangeRateIsRequired
+        return TestStep.resultIsRequired
     }
 }
 
-final class ExchangeRateFlow: Flow{
+final class ResultFlow: Flow{
     var root: Presentable{
         return self.rootVC
     }
-    let stepper: ExchangeRateStepper
+    let stepper: ResultStepper
     private let rootVC = UINavigationController()
     init(
-        with stepper: ExchangeRateStepper
+        with stepper: ResultStepper
     ){
         self.stepper = stepper
     }
@@ -38,8 +38,6 @@ final class ExchangeRateFlow: Flow{
         guard let step = step.asTestStep else { return .none }
         
         switch step{
-        case .exchangeRateIsRequired:
-            return coordinateToExchangeRateVC()
         case .resultIsRequired:
             return coordinateToResultVC()
         default:
@@ -47,13 +45,7 @@ final class ExchangeRateFlow: Flow{
         }
     }
 }
-private extension ExchangeRateFlow{
-    func coordinateToExchangeRateVC() -> FlowContributors{
-        let reactor = ExchangeRateReactor()
-        let vc = ExchangeRateVC(reactor: reactor)
-        self.rootVC.pushViewController(vc, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
-    }
+private extension ResultFlow{
     func coordinateToResultVC() -> FlowContributors{
         let reactor = ResultReactor()
         let vc = ResultVC(reactor: reactor)

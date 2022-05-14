@@ -52,7 +52,7 @@ extension ExchangeRateReactor{
         case let .updateRemitAmount(remitAmount):
             return .just(.setRemitAmount(remitAmount))
         case .exchangeRateButtonDidTap:
-            steps.accept(TestStep.exchangeRateIsRequired)
+            steps.accept(TestStep.resultIsRequired)
             return .empty()
         }
         return .empty()

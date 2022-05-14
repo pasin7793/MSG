@@ -30,6 +30,7 @@
 		9492DC6B282FCD7C000B7A7D /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC6A282FCD7C000B7A7D /* ViewModel.swift */; };
 		9492DC6E28302A89000B7A7D /* ResultVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC6D28302A88000B7A7D /* ResultVC.swift */; };
 		9492DC7128302AC1000B7A7D /* ResultReactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC7028302AC1000B7A7D /* ResultReactor.swift */; };
+		9492DC7428302EFD000B7A7D /* ResultFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC7328302EFD000B7A7D /* ResultFlow.swift */; };
 		9EC941AE27FBC0D057CB81D1 /* Pods_MSG_MSGUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31FEB24E173AB5F7FA876C21 /* Pods_MSG_MSGUITests.framework */; };
 		DE4669A98379F9AF6911DED8 /* Pods_MSGTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB8D80A8E12E31C261B04D55 /* Pods_MSGTests.framework */; };
 /* End PBXBuildFile section */
@@ -84,6 +85,7 @@
 		9492DC6A282FCD7C000B7A7D /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		9492DC6D28302A88000B7A7D /* ResultVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultVC.swift; sourceTree = "<group>"; };
 		9492DC7028302AC1000B7A7D /* ResultReactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultReactor.swift; sourceTree = "<group>"; };
+		9492DC7328302EFD000B7A7D /* ResultFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultFlow.swift; sourceTree = "<group>"; };
 		CB5C196A7CB49034BF94FE44 /* Pods-MSGTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSGTests.release.xcconfig"; path = "Target Support Files/Pods-MSGTests/Pods-MSGTests.release.xcconfig"; sourceTree = "<group>"; };
 		DB8D80A8E12E31C261B04D55 /* Pods_MSGTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSGTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F52E3E2F3F02322EEC5FCBA6 /* Pods-MSGTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSGTests.debug.xcconfig"; path = "Target Support Files/Pods-MSGTests/Pods-MSGTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 		9492DC47282EBC18000B7A7D /* Flows */ = {
 			isa = PBXGroup;
 			children = (
+				9492DC7228302EF0000B7A7D /* ResultFlow */,
 				9492DC4D282EBC4B000B7A7D /* ExchangeRateFlow */,
 			);
 			path = Flows;
@@ -349,6 +352,14 @@
 				9492DC7028302AC1000B7A7D /* ResultReactor.swift */,
 			);
 			path = Reactor;
+			sourceTree = "<group>";
+		};
+		9492DC7228302EF0000B7A7D /* ResultFlow */ = {
+			isa = PBXGroup;
+			children = (
+				9492DC7328302EFD000B7A7D /* ResultFlow.swift */,
+			);
+			path = ResultFlow;
 			sourceTree = "<group>";
 		};
 		B181B11BB5E609CE97C422DF /* Frameworks */ = {
@@ -622,6 +633,7 @@
 				9492DC0F282EBB17000B7A7D /* SceneDelegate.swift in Sources */,
 				9492DC5C282EBD1C000B7A7D /* StepExt.swift in Sources */,
 				9492DC7128302AC1000B7A7D /* ResultReactor.swift in Sources */,
+				9492DC7428302EFD000B7A7D /* ResultFlow.swift in Sources */,
 				9492DC65282EBD87000B7A7D /* ExchangeRateAPI.swift in Sources */,
 				9492DC4C282EBC3E000B7A7D /* TestStep.swift in Sources */,
 				9492DC6B282FCD7C000B7A7D /* ViewModel.swift in Sources */,

@@ -7,5 +7,6 @@ enum TestStep: Step{
     case dismiss
     
     case exchangeRateIsRequired
+    case resultIsRequired
     case countryIsRequired
 }

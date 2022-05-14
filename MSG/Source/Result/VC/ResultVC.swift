@@ -38,8 +38,11 @@ final class ResultVC: baseVC<ResultReactor>{
     }
     let provider = MoyaProvider<ExchangeRateAPI>()
     
+    override func setUp() {
+        view.backgroundColor = .white
+    }
     override func addView(){
-        [mainLabel,remitCountryLabel].forEach{ view.addSubview($0)
+        [mainLabel,receiptCountryLabel,remitCountryLabel].forEach{ view.addSubview($0)
         }
     }
     override func setLayout() {

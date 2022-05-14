@@ -33,6 +33,8 @@ final class AppFlow: Flow{
         switch step {
         case .exchangeRateIsRequired:
             return coordinateToExchange()
+        case .resultIsRequired:
+            return coordinateToResult()
         default:
             return .none
         }
@@ -46,6 +48,15 @@ private extension AppFlow{
             self.rootWindow.rootViewController = root
         }
         let nextStep = OneStepper(withSingleStep: TestStep.exchangeRateIsRequired)
+        return .one(flowContributor: .contribute(withNextPresentable: flow, withNextStepper: nextStep))
+    }
+    
+    func coordinateToResult() -> FlowContributors{
+        let flow = ResultFlow(with: .init())
+        Flows.use(flow, when: .created){ [unowned self] root in
+            self.rootWindow.rootViewController = root
+        }
+        let nextStep = OneStepper(withSingleStep: TestStep.resultIsRequired)
         return .one(flowContributor: .contribute(withNextPresentable: flow, withNextStepper: nextStep))
     }
 }

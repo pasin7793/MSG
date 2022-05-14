@@ -8,9 +8,6 @@
 import UIKit
 
 // MARK: - Info
-struct ExchangeRateItemResponse: Codable{
-    let items: [ExchangeRateItem]?
-}
 struct Info: Codable {
     let timestamp: Int
     let quote: Double

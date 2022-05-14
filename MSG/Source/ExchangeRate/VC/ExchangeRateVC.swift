@@ -17,13 +17,13 @@ import RxRelay
 final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     //MARK: -Properties
-    
-    var exchangeRate: [ExchangeRateItem]?
+
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
         $0.textColor = .black
     }
+    private let viewModel = ViewModel()
     private let bottomMargin: Int = 32
     private let rightMargin: Int = -80
     
@@ -63,7 +63,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.textAlignment = .right
     }
     
-    private let costLabel = UILabel().then{
+    private let amountLabel = UILabel().then{
         $0.text = "송금액 :"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
@@ -103,7 +103,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.textColor = .black
         $0.textAlignment = .right
     }
-    private let costValueTextField = UITextField().then{
+    private let amountValueTextField = UITextField().then{
         $0.text = "0"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
@@ -116,6 +116,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.layer.cornerRadius = 10
         $0.setTitleColor(UIColor.white, for: .normal)
     }
+    private let provider = MoyaProvider<ExchangeRateAPI>()
     override func setUp() {
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -132,8 +133,31 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         toolBar.setItems([doneButton], animated: true)
     }
     override func addView(){
-        [mainLabel,remitCountryLabel,remitCountryValue,receiptCountryLabel,receiptCountryValue,exchangeRateLabel,exchangeRateValueLabel,timeLabel,timeValueLabel,costLabel,costValueTextField,costValueUnit,exchangeRateButton].forEach{ view.addSubview($0)
+        [mainLabel,remitCountryLabel,remitCountryValue,receiptCountryLabel,receiptCountryValue,exchangeRateLabel,exchangeRateValueLabel,timeLabel,timeValueLabel,amountLabel,amountValueTextField,costValueUnit,exchangeRateButton].forEach{ view.addSubview($0)
         }
+    }
+    func setControl(){
+        let input = ViewModel.Input(from: remitCountryValue.rx.text.orEmpty.asObservable(), to: receiptCountryValue.rx.text.orEmpty.asObservable())
+        
+        let output = viewModel.transform(input)
+        output.isFilled
+            .withUnretained(self)
+            .subscribe(onNext: { owner, item in
+                owner.exchangeRateButton.isEnabled = item
+            })
+            .disposed(by: disposeBag)
+    }
+    override func provide(){
+        setControl()
+        provider.rx.request(.postQuery(query: Query(from: remitCountryValue.text ?? "", to: receiptCountryValue.text ?? "", amount: amountValueTextField.hashValue)), callbackQueue: .global())
+            .asObservable()
+            .subscribe{ res in
+                print(try! res.mapJSON())
+                print("sadassad")
+            } onError: { err in
+                print(err.localizedDescription)
+            }
+            .disposed(by: disposeBag)
     }
     override func setLayout() {
         mainLabel.snp.makeConstraints { make in
@@ -157,13 +181,13 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             make.top.equalTo(exchangeRateLabel.snp.bottom).offset(bottomMargin)
             make.leading.equalTo(remitCountryLabel)
         }
-        costLabel.snp.makeConstraints { make in
+        amountLabel.snp.makeConstraints { make in
             make.top.equalTo(timeLabel.snp.bottom).offset(bottomMargin)
             make.leading.equalTo(remitCountryLabel)
             make.width.equalTo(remitCountryLabel)
         }
         exchangeRateButton.snp.makeConstraints { make in
-            make.top.equalTo(costLabel.snp.bottom).offset(bounds.height*0.4)
+            make.top.equalTo(amountLabel.snp.bottom).offset(bounds.height*0.4)
             make.width.equalTo(197)
             make.height.equalTo(49)
             make.centerX.equalToSuperview()
@@ -184,13 +208,13 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             make.top.equalTo(timeLabel)
             make.trailing.equalToSuperview().offset(rightMargin)
         }
-        costValueTextField.snp.makeConstraints { make in
-            make.top.equalTo(costLabel)
+        amountValueTextField.snp.makeConstraints { make in
+            make.top.equalTo(amountLabel)
             make.centerX.equalToSuperview()
             make.width.equalTo(135)
         }
         costValueUnit.snp.makeConstraints { make in
-            make.top.equalTo(costValueTextField)
+            make.top.equalTo(amountValueTextField)
             make.trailing.equalToSuperview().offset(rightMargin)
         }
     }
@@ -200,14 +224,14 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         UserDefaults.standard.rx.observe(String.self, UserDefaultsLocal.forKeys.remitCountry)
             .compactMap{ $0 }
             .map { Country(rawValue: $0) ?? .USD}
-            .map (Reactor.Action.updateRemitCountry)
+            .map (Reactor.Action.remitCountryButtonDidTap)
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         UserDefaults.standard.rx.observe(String.self, UserDefaultsLocal.forKeys.receiptCountry)
             .compactMap{ $0 }
             .map { Country(rawValue: $0) ?? .USD}
-            .map (Reactor.Action.updateReceiptCountry)
+            .map (Reactor.Action.receiptCountryButtonDidTap)
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -223,21 +247,29 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             .subscribe(onNext: { text in
                 self.costValueUnit.text = "\(self.remitCountryValue.text!)"
             }).disposed(by: disposeBag)
+        Observable .concat(
+            .just(remitCountryValue),
+            .just(receiptCountryValue)
+        )
+            .subscribe(onNext: { text in
+                self.exchangeRateValueLabel.text = "\(self.remitCountryValue.text!) / \(self.receiptCountryValue.text!)"
+                
+            })
+            .disposed(by: disposeBag)
     }
     override func bindState(reactor: ExchangeRateReactor) {
         let sharedState = reactor.state.share(replay: 1).observe(on: MainScheduler.asyncInstance)
         
        
     }
-    func bind(_ model: Query) {
-        remitCountryValue.text = model.from
-        receiptCountryValue.text = model.to
-        
+    override func bind(_ model: Info) {
+        exchangeRateValueLabel.text = "\(model.quote) \(remitCountryValue.text!) / \(receiptCountryValue.text!)"
+        timeValueLabel.text = "\(model.timestamp)"
     }
     //MARK: -Action
     @objc func DoneButton(_ sender: Any){
         self.view.endEditing(true)
-        
+        provide()
     }
 }
 

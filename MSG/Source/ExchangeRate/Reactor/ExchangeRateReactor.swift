@@ -10,13 +10,10 @@ final class ExchangeRateReactor: Reactor,Stepper{
     var steps: PublishRelay<Step> = .init()
     
     enum Action{
-        case remitCountryButtonDidTap
-        case updateRemitCountry(Country)
-        case remitReceiptButtonDidTap
-        case updateReceiptCountry(Country)
+        case remitCountryButtonDidTap(Country)
+        case receiptCountryButtonDidTap(Country)
         case updateRemitAmount(Int)
         case exchangeRateButtonDidTap
-        case fetchExchangeRate
     }
     enum Mutation{
         case setRemitCountry(Country)
@@ -46,24 +43,20 @@ final class ExchangeRateReactor: Reactor,Stepper{
 extension ExchangeRateReactor{
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .remitCountryButtonDidTap:
+        case let .remitCountryButtonDidTap(remit):
+            UserDefaultsLocal.shared.remitCountry = remit
             steps.accept(TestStep.countryIsRequired)
-        case let .updateRemitCountry(country):
-            return .just(.setRemitCountry(country))
-        case .remitReceiptButtonDidTap:
+            return didTap()
+        case let .receiptCountryButtonDidTap(receipt):
+            UserDefaultsLocal.shared.receiptCountry = receipt
             steps.accept(TestStep.countryIsRequired)
-        case let .updateReceiptCountry(country):
-            return .just(.setReceiptCountry(country))
+            return didTap()
         case let .updateRemitAmount(remitAmount):
             return .just(.setRemitAmount(remitAmount))
         case .exchangeRateButtonDidTap:
             steps.accept(TestStep.exchangeRateIsRequired)
-        case .fetchExchangeRate:
-            return fetchExchangeRate()
-        default:
             return .empty()
         }
-        return .empty()
     }
 }
 extension ExchangeRateReactor{
@@ -92,14 +85,16 @@ private extension ExchangeRateReactor{
         }
         return true
     }
-    func fetchExchangeRate() -> Observable<Mutation>{
-        let exchange = Query(from: currentState.remitCountry.rawValue, to: currentState.receiptCountry.rawValue, amount: currentState.remitAmount)
-        NetworkManager.shared.fetchExchangeRate(exchangeRate: Query(from: exchange.from, to: exchange.to, amount: exchange.amount))
+    
+    
+    func didTap() -> Observable<Mutation>{
+        let query = Query(from: currentState.remitCountry.display, to: currentState.receiptCountry.display, amount: currentState.remitAmount.hashValue)
+        NetworkManager.shared.fetchExchangeRate(query: Query(from: query.from, to: query.to, amount: query.amount))
             .asObservable()
             .subscribe(onNext: { [weak self] res in
                 switch res.statusCode{
                 case 200:
-                    print("Login Success")
+                    print("ad")
                 case 400:
                     self?.steps.accept(TestStep.alert(title: "Error", message: "다시하셈 ㅋ"))
                 default:

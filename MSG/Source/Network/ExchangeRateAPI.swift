@@ -2,20 +2,21 @@
 import Moya
 
 enum ExchangeRateAPI: TargetType{
-    case getQuery(from: Query, to: Query, amount: Query)
+    case postQuery(query:Query)
     case getInfo
+    
 }
 
 extension ExchangeRateAPI{
     var baseURL: URL{
         return URL(string:
-            "https://api.apilayer.com/currency_data/convert?apikey=OGFqIhaxSrBt5plLpmgn0izoliqyd62t/")!
+            "https://api.apilayer.com/currency_data/convert?apikey=OGFqIhaxSrBt5plLpmgn0izoliqyd62t")!
     }
     
     var path: String{
         switch self {
-        case .getQuery(from: let from, to: let to,amount: let amount):
-            return "&from=\(from)&to=\(to)&amount=\(amount)"
+        case .postQuery(query: let query):
+            return "&from=\(query)&to=\(query)&amount=\(query)"
         case .getInfo:
             return "/"
         }
@@ -23,8 +24,8 @@ extension ExchangeRateAPI{
     
     var method: Method{ 
         switch self {
-        case .getQuery:
-            return .get
+        case .postQuery:
+            return .post
         case .getInfo:
             return .get
         }
@@ -32,8 +33,8 @@ extension ExchangeRateAPI{
     
     var task: Task{
         switch self {
-        case .getQuery:
-            return .requestPlain
+        case .postQuery(let query):
+            return .requestParameters(parameters: ["from": query.from, "to": query.to, "amount": query.amount], encoding: JSONEncoding.default)
         case .getInfo:
             return .requestPlain
         }

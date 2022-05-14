@@ -14,7 +14,7 @@ final class NetworkManager: NetworkManagerType{
     
     var provider: MoyaProvider<ExchangeRateAPI> = .init()
     func fetchExchangeRate(query: Query) -> Single<Response> {
-        return provider.rx.request(.postQuery(query: query),callbackQueue: .global())
+        return provider.rx.request(.getQuery(query: query),callbackQueue: .global())
     }
 }
 

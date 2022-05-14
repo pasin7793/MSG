@@ -23,6 +23,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
         $0.textColor = .black
     }
+    private var data: ExchangeRateItem!
     private let viewModel = ViewModel()
     private let bottomMargin: Int = 32
     private let rightMargin: Int = -80
@@ -104,7 +105,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.textAlignment = .right
     }
     private let amountValueTextField = UITextField().then{
-        $0.text = "0"
+        $0.text = "1"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .center
@@ -116,7 +117,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.layer.cornerRadius = 10
         $0.setTitleColor(UIColor.white, for: .normal)
     }
-    private let provider = MoyaProvider<ExchangeRateAPI>()
+    let provider = MoyaProvider<ExchangeRateAPI>()
     override func setUp() {
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -148,16 +149,20 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             .disposed(by: disposeBag)
     }
     override func provide(){
+        let query = Query.init(from: "\(remitCountryValue.text!)", to: "\(receiptCountryValue.text!)", amount:1)
         setControl()
-        provider.rx.request(.postQuery(query: Query(from: remitCountryValue.text ?? "", to: receiptCountryValue.text ?? "", amount: amountValueTextField.hashValue)), callbackQueue: .global())
-            .asObservable()
-            .subscribe{ res in
-                print(try! res.mapJSON())
-                print("sadassad")
-            } onError: { err in
+        provider.request(.getQuery(query: query)){ response in
+            switch response{
+            case .success(let result):
+                do{
+                    self.data = try result.map(ExchangeRateItem.self)
+                } catch(let err){
+                    print(err.localizedDescription)
+                }
+            case .failure(let err):
                 print(err.localizedDescription)
             }
-            .disposed(by: disposeBag)
+        }
     }
     override func setLayout() {
         mainLabel.snp.makeConstraints { make in
@@ -247,15 +252,6 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             .subscribe(onNext: { text in
                 self.costValueUnit.text = "\(self.remitCountryValue.text!)"
             }).disposed(by: disposeBag)
-        Observable .concat(
-            .just(remitCountryValue),
-            .just(receiptCountryValue)
-        )
-            .subscribe(onNext: { text in
-                self.exchangeRateValueLabel.text = "\(self.remitCountryValue.text!) / \(self.receiptCountryValue.text!)"
-                
-            })
-            .disposed(by: disposeBag)
     }
     override func bindState(reactor: ExchangeRateReactor) {
         let sharedState = reactor.state.share(replay: 1).observe(on: MainScheduler.asyncInstance)
@@ -265,11 +261,25 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     override func bind(_ model: Info) {
         exchangeRateValueLabel.text = "\(model.quote) \(remitCountryValue.text!) / \(receiptCountryValue.text!)"
         timeValueLabel.text = "\(model.timestamp)"
+        Observable .concat(
+            .just(remitCountryValue),
+            .just(receiptCountryValue)
+        )
+            .subscribe(onNext: { text in
+                self.exchangeRateValueLabel.text = "\(model.quote)\(self.remitCountryValue.text!) / \(self.receiptCountryValue.text!)"
+                
+            })
+            .disposed(by: disposeBag)
     }
     //MARK: -Action
     @objc func DoneButton(_ sender: Any){
         self.view.endEditing(true)
-        provide()
+        if remitCountryValue.text == "" || receiptCountryValue.text == ""{
+            print("no")
+        }
+        else{
+            provide()
+        }
     }
 }
 

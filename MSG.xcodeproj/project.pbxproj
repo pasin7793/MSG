@@ -28,6 +28,8 @@
 		9492DC65282EBD87000B7A7D /* ExchangeRateAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC64282EBD87000B7A7D /* ExchangeRateAPI.swift */; };
 		9492DC67282EBD96000B7A7D /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC66282EBD96000B7A7D /* NetworkManager.swift */; };
 		9492DC6B282FCD7C000B7A7D /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC6A282FCD7C000B7A7D /* ViewModel.swift */; };
+		9492DC6E28302A89000B7A7D /* ResultVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC6D28302A88000B7A7D /* ResultVC.swift */; };
+		9492DC7128302AC1000B7A7D /* ResultReactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9492DC7028302AC1000B7A7D /* ResultReactor.swift */; };
 		9EC941AE27FBC0D057CB81D1 /* Pods_MSG_MSGUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31FEB24E173AB5F7FA876C21 /* Pods_MSG_MSGUITests.framework */; };
 		DE4669A98379F9AF6911DED8 /* Pods_MSGTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB8D80A8E12E31C261B04D55 /* Pods_MSGTests.framework */; };
 /* End PBXBuildFile section */
@@ -80,6 +82,8 @@
 		9492DC64282EBD87000B7A7D /* ExchangeRateAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeRateAPI.swift; sourceTree = "<group>"; };
 		9492DC66282EBD96000B7A7D /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9492DC6A282FCD7C000B7A7D /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		9492DC6D28302A88000B7A7D /* ResultVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultVC.swift; sourceTree = "<group>"; };
+		9492DC7028302AC1000B7A7D /* ResultReactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultReactor.swift; sourceTree = "<group>"; };
 		CB5C196A7CB49034BF94FE44 /* Pods-MSGTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSGTests.release.xcconfig"; path = "Target Support Files/Pods-MSGTests/Pods-MSGTests.release.xcconfig"; sourceTree = "<group>"; };
 		DB8D80A8E12E31C261B04D55 /* Pods_MSGTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MSGTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F52E3E2F3F02322EEC5FCBA6 /* Pods-MSGTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSGTests.debug.xcconfig"; path = "Target Support Files/Pods-MSGTests/Pods-MSGTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -317,6 +321,8 @@
 		9492DC68282FAA9B000B7A7D /* Result */ = {
 			isa = PBXGroup;
 			children = (
+				9492DC6F28302AB8000B7A7D /* Reactor */,
+				9492DC6C28302A7C000B7A7D /* VC */,
 			);
 			path = Result;
 			sourceTree = "<group>";
@@ -327,6 +333,22 @@
 				9492DC6A282FCD7C000B7A7D /* ViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		9492DC6C28302A7C000B7A7D /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				9492DC6D28302A88000B7A7D /* ResultVC.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
+		9492DC6F28302AB8000B7A7D /* Reactor */ = {
+			isa = PBXGroup;
+			children = (
+				9492DC7028302AC1000B7A7D /* ResultReactor.swift */,
+			);
+			path = Reactor;
 			sourceTree = "<group>";
 		};
 		B181B11BB5E609CE97C422DF /* Frameworks */ = {
@@ -591,6 +613,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9492DC45282EBC0A000B7A7D /* Country.swift in Sources */,
+				9492DC6E28302A89000B7A7D /* ResultVC.swift in Sources */,
 				9492DC0D282EBB17000B7A7D /* AppDelegate.swift in Sources */,
 				9492DC42282EBBED000B7A7D /* UserDefaultsLocal.swift in Sources */,
 				9492DC4A282EBC23000B7A7D /* AppFlow.swift in Sources */,
@@ -598,6 +621,7 @@
 				9492DC50282EBC5E000B7A7D /* ExchangeRateFlow.swift in Sources */,
 				9492DC0F282EBB17000B7A7D /* SceneDelegate.swift in Sources */,
 				9492DC5C282EBD1C000B7A7D /* StepExt.swift in Sources */,
+				9492DC7128302AC1000B7A7D /* ResultReactor.swift in Sources */,
 				9492DC65282EBD87000B7A7D /* ExchangeRateAPI.swift in Sources */,
 				9492DC4C282EBC3E000B7A7D /* TestStep.swift in Sources */,
 				9492DC6B282FCD7C000B7A7D /* ViewModel.swift in Sources */,

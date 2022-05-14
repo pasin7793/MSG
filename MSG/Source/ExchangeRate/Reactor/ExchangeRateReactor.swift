@@ -46,17 +46,16 @@ extension ExchangeRateReactor{
         case let .remitCountryButtonDidTap(remit):
             UserDefaultsLocal.shared.remitCountry = remit
             steps.accept(TestStep.countryIsRequired)
-            return didTap()
         case let .receiptCountryButtonDidTap(receipt):
             UserDefaultsLocal.shared.receiptCountry = receipt
             steps.accept(TestStep.countryIsRequired)
-            return didTap()
         case let .updateRemitAmount(remitAmount):
             return .just(.setRemitAmount(remitAmount))
         case .exchangeRateButtonDidTap:
             steps.accept(TestStep.exchangeRateIsRequired)
             return .empty()
         }
+        return .empty()
     }
 }
 extension ExchangeRateReactor{
@@ -84,25 +83,6 @@ private extension ExchangeRateReactor{
             return false
         }
         return true
-    }
-    
-    
-    func didTap() -> Observable<Mutation>{
-        let query = Query(from: currentState.remitCountry.display, to: currentState.receiptCountry.display, amount: currentState.remitAmount.hashValue)
-        NetworkManager.shared.fetchExchangeRate(query: Query(from: query.from, to: query.to, amount: query.amount))
-            .asObservable()
-            .subscribe(onNext: { [weak self] res in
-                switch res.statusCode{
-                case 200:
-                    print("ad")
-                case 400:
-                    self?.steps.accept(TestStep.alert(title: "Error", message: "다시하셈 ㅋ"))
-                default:
-                    print(res.statusCode)
-                    break
-                }
-            })
-        return .empty()
     }
 }
                  

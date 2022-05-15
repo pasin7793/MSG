@@ -23,6 +23,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.textColor = .black
     }
     private var data: ExchangeRateItem!
+    private var info: Info? = nil
     private let viewModel = ViewModel()
     private let bottomMargin: Int = 32
     private let rightMargin: Int = -80
@@ -151,7 +152,6 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             .disposed(by: disposeBag)
     }
     override func provide(){
-        let query = Query.init(from: "\(remitCountryValue.text!)", to: "\(receiptCountryValue.text!)", amount: Int(amountValueTextField.text ?? "") ?? 0)
         setControl()
         provider.request(.exchange(remitCountry: remitCountryValue.text!, receiptCountry: receiptCountryValue.text!, amount: Int(amountValueTextField.text!) ?? 0))
         { response in
@@ -159,7 +159,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             switch response{
             case .success(let result):
                 do{
-                    print(result.response?.statusCode)
+                    print(result.response?.statusCode ?? 0)
                     print(try result.mapJSON())
                     self.data = try result.map(ExchangeRateItem.self)
                 } catch(let err){
@@ -262,20 +262,6 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     override func bindState(reactor: ExchangeRateReactor) {
         let sharedState = reactor.state.share(replay: 1).observe(on: MainScheduler.asyncInstance)
         
-       
-    }
-    override func bind(_ model: Info) {
-        exchangeRateValueLabel.text = "\(model.quote) \(remitCountryValue.text!) / \(receiptCountryValue.text!)"
-        timeValueLabel.text = "\(model.timestamp)"
-        Observable .concat(
-            .just(remitCountryValue),
-            .just(receiptCountryValue)
-        )
-            .subscribe(onNext: { text in
-                self.exchangeRateValueLabel.text = "\(model.quote)\(self.remitCountryValue.text!) / \(self.receiptCountryValue.text!)"
-                
-            })
-            .disposed(by: disposeBag)
     }
     //MARK: -Action
     @objc func DoneButton(_ sender: Any){
@@ -283,6 +269,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         provide()
         let str = dateFormatter.string(from: date)
         timeValueLabel.text = str
+        exchangeRateValueLabel.text = "\(info?.quote ?? 0) \(remitCountryValue.text!) / \(receiptCountryValue.text!)"
     }
 }
 

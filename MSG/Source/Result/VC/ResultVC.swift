@@ -11,8 +11,8 @@ import RxRelay
 final class ResultVC: baseVC<ResultReactor>{
     
     //MARK: -Properties
-
-    var country: (Country)?
+    private var query: Query? = nil
+    private var info: Info? = nil
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
@@ -59,6 +59,9 @@ final class ResultVC: baseVC<ResultReactor>{
     
     override func setUp() {
         view.backgroundColor = .white
+        remitCountryValueLabel.text = query?.from
+        receiptCountryValueLabel.text = query?.to
+        resultLabel.text = "수취금액은 \(String(info?.quote ?? 0))원 입니다"
     }
     override func addView(){
         [mainLabel,receiptCountryLabel,remitCountryLabel,remitCountryValueLabel,receiptCountryValueLabel,resultLabel].forEach{ view.addSubview($0)

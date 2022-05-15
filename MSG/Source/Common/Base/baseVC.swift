@@ -35,7 +35,6 @@ class baseVC<T: Reactor>:UIViewController{
     func configureVC(){}
     func configureNavigation(){}
     
-    func bind(_ model: Info){}
     func bindView(reactor: T){}
     func bindAction(reactor: T){}
     func bindState(reactor: T){}

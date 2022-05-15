@@ -4,7 +4,7 @@ import Moya
 enum ExchangeRateAPI: TargetType{
     case getQuery(query:Query)
     case exchange(remitCountry: String, receiptCountry: String, amount: Int)
-    case getInfo
+    case getInfo(quote: Double)
 }
 
 extension ExchangeRateAPI{
@@ -44,8 +44,10 @@ extension ExchangeRateAPI{
                 "amount": amount
             ], encoding: URLEncoding.queryString)
                 
-        case .getInfo:
-            return .requestPlain
+        case .getInfo(let quote):
+            return .requestParameters(parameters: [
+                "quote": quote
+            ], encoding: URLEncoding.queryString)
         case .getQuery(query: let query):
             return .requestPlain
         }
@@ -53,7 +55,7 @@ extension ExchangeRateAPI{
     var headers: [String : String]? {
         return [
             "Content-Type": "application/json",
-            "apikey": "ABW116RopnNOXBj4B95rbC7LKdOL7AJM"
+            "apikey": "0QgtcHeJoGSPjH40Z4FDNZ3MqhjuZO8A"
         ]
     }
     

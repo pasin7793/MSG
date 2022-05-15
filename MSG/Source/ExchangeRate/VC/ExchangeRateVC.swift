@@ -96,7 +96,8 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         $0.textColor = .black
         $0.textAlignment = .right
     }
-    let timeInterval = NSDate().timeIntervalSince1970
+    private let dateFormatter = DateFormatter()
+    private let date = Date()
     
     private let costValueUnit = UILabel().then{
         
@@ -132,6 +133,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         
         toolBar.sizeToFit()
         toolBar.setItems([doneButton], animated: true)
+        dateFormatter.dateFormat = "YYYY-MM-dd HH:mm"
     }
     override func addView(){
         [mainLabel,remitCountryLabel,remitCountryValue,receiptCountryLabel,receiptCountryValue,exchangeRateLabel,exchangeRateValueLabel,timeLabel,timeValueLabel,amountLabel,amountValueTextField,costValueUnit,exchangeRateButton].forEach{ view.addSubview($0)
@@ -151,12 +153,15 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     override func provide(){
         let query = Query.init(from: "\(remitCountryValue.text!)", to: "\(receiptCountryValue.text!)", amount: Int(amountValueTextField.text ?? "") ?? 0)
         setControl()
-        provider.request(.exchange(remitCountryValue.text, receiptCountryValue.text, amountValueTextField.text)){ response in
+        provider.request(.exchange(remitCountry: remitCountryValue.text!, receiptCountry: receiptCountryValue.text!, amount: Int(amountValueTextField.text!) ?? 0))
+        { response in
+            
             switch response{
             case .success(let result):
                 do{
-                    self.data = try result.map(ExchangeRateItem.self)
+                    print(result.response?.statusCode)
                     print(try result.mapJSON())
+                    self.data = try result.map(ExchangeRateItem.self)
                 } catch(let err){
                     print(err.localizedDescription)
                 }
@@ -276,6 +281,8 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     @objc func DoneButton(_ sender: Any){
         self.view.endEditing(true)
         provide()
+        let str = dateFormatter.string(from: date)
+        timeValueLabel.text = str
     }
 }
 

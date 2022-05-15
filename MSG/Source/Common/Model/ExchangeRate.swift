@@ -18,12 +18,6 @@ struct Query: Decodable{
     let from: String
     let to: String
     let amount: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case from 
-        case to
-        case amount
-    }
 }
 struct ExchangeRateItem: Decodable{
     let success: Bool

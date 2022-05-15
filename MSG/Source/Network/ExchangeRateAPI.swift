@@ -1,26 +1,25 @@
 
 import Moya
-import ReactorKit
 
 enum ExchangeRateAPI: TargetType{
     case getQuery(query:Query)
-    case exchange(_ remitCountry: String? = nil, _ receiptCountry: String? = nil, _ amount: String? = nil)
+    case exchange(remitCountry: String, receiptCountry: String, amount: Int)
     case getInfo
 }
 
 extension ExchangeRateAPI{
     var baseURL: URL{
         return URL(string:
-            "https://api.apilayer.com/currency_data/convert?apikey=ABW116RopnNOXBj4B95rbC7LKdOL7AJM&from=PHP&to=KRW&amount=1&info=timestamp&info=quote")!
+            "https://api.apilayer.com/currency_data/convert")!
     }
     
     var path: String{
         switch self {
         case .getQuery(query: let query):
-            return "&from=\(query)&to=\(query)&amount=\(query)"
+            return "from=\(query)&to=\(query)&amount=\(query)"
         case .getInfo:
             return ""
-        case .exchange(_, _, _):
+        case .exchange(remitCountry: let remitCountry, receiptCountry: let receiptCountry, amount: let amount):
             return ""
         }
     }
@@ -39,12 +38,11 @@ extension ExchangeRateAPI{
     var task: Task{
         switch self {
         case .exchange(let remitCountry, let receiptCountry, let amount):
-            let param : [String: Any] = [
-                "remitCountry": remitCountry as Any,
-                "receiptCountry": receiptCountry as Any,
-                "amount": amount as Any,
-            ]
-            return .requestParameters(parameters: param, encoding: URLEncoding.default)
+            return .requestParameters(parameters: [
+                "from": remitCountry,
+                "to": receiptCountry,
+                "amount": amount
+            ], encoding: URLEncoding.queryString)
                 
         case .getInfo:
             return .requestPlain
@@ -53,10 +51,10 @@ extension ExchangeRateAPI{
         }
     }
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        return [
+            "Content-Type": "application/json",
+            "apikey": "ABW116RopnNOXBj4B95rbC7LKdOL7AJM"
+        ]
     }
     
-    var validationType: ValidationType{
-        return .successCodes
-    }
 }

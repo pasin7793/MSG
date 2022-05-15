@@ -8,13 +8,13 @@
 import UIKit
 
 // MARK: - Info
-struct Info: Codable {
+struct Info: Decodable {
     let timestamp: Int
     let quote: Double
 }
 
 // MARK: - Query
-struct Query: Codable{
+struct Query: Decodable{
     let from: String
     let to: String
     let amount: Int
@@ -25,7 +25,7 @@ struct Query: Codable{
         case amount
     }
 }
-struct ExchangeRateItem: Codable{
+struct ExchangeRateItem: Decodable{
     let success: Bool
     let query: Query
     let info: Info

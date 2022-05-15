@@ -71,14 +71,14 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     }
     
     private let remitCountryValue = UITextField().then{
-        $0.text = "asd"
+        $0.text = "KRW"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
     
     private let receiptCountryValue = UITextField().then{
-        $0.text = "asd"
+        $0.text = "USD"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
@@ -149,14 +149,14 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             .disposed(by: disposeBag)
     }
     override func provide(){
-        let query = Query.init(from: "\(remitCountryValue.text!)", to: "\(receiptCountryValue.text!)", amount:1)
+        let query = Query.init(from: "\(remitCountryValue.text!)", to: "\(receiptCountryValue.text!)", amount: Int(amountValueTextField.text ?? "") ?? 0)
         setControl()
-        provider.request(.getQuery(query: query)){ response in
+        provider.request(.exchange(remitCountryValue.text, receiptCountryValue.text, amountValueTextField.text)){ response in
             switch response{
             case .success(let result):
                 do{
                     self.data = try result.map(ExchangeRateItem.self)
-                    print("asd")
+                    print(try result.mapJSON())
                 } catch(let err){
                     print(err.localizedDescription)
                 }
@@ -275,12 +275,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     //MARK: -Action
     @objc func DoneButton(_ sender: Any){
         self.view.endEditing(true)
-        if remitCountryValue.text == "" || receiptCountryValue.text == ""{
-            print("no")
-        }
-        else{
-            provide()
-        }
+        provide()
     }
 }
 

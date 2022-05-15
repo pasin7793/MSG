@@ -188,7 +188,7 @@
 				9492DC58282EBCFC000B7A7D /* Common */,
 				9492DC51282EBCA8000B7A7D /* ExchangeRate */,
 				9492DC46282EBC11000B7A7D /* Flow */,
-				9492DC43282EBBFF000B7A7D /* Domain */,
+				9492DC43282EBBFF000B7A7D /* Entities */,
 				9492DC40282EBBCA000B7A7D /* UserDefault */,
 			);
 			path = Source;
@@ -202,12 +202,12 @@
 			path = UserDefault;
 			sourceTree = "<group>";
 		};
-		9492DC43282EBBFF000B7A7D /* Domain */ = {
+		9492DC43282EBBFF000B7A7D /* Entities */ = {
 			isa = PBXGroup;
 			children = (
 				9492DC44282EBC0A000B7A7D /* Country.swift */,
 			);
-			path = Domain;
+			path = Entities;
 			sourceTree = "<group>";
 		};
 		9492DC46282EBC11000B7A7D /* Flow */ = {

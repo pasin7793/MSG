@@ -1,5 +1,5 @@
 
-public enum Country: String, CaseIterable{
+public enum Country: String{
     case KRW = "KRW"
     case USD = "USD"
     case JPY = "JPY"

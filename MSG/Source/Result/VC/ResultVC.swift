@@ -12,6 +12,7 @@ final class ResultVC: baseVC<ResultReactor>{
     
     //MARK: -Properties
 
+    var country: (Country)?
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
@@ -36,13 +37,31 @@ final class ResultVC: baseVC<ResultReactor>{
         $0.textColor = .black
         $0.textAlignment = .right
     }
-    let provider = MoyaProvider<ExchangeRateAPI>()
+    
+    private let remitCountryValueLabel = UITextField().then{
+        $0.text = "ASd"
+        $0.font = UIFont(name: "SFPro-Regular", size: 16)
+        $0.textColor = .black
+        $0.textAlignment = .right
+    }
+    private let receiptCountryValueLabel = UITextField().then{
+        $0.text = "asd"
+        $0.font = UIFont(name: "SFPro-Regular", size: 16)
+        $0.textColor = .black
+        $0.textAlignment = .right
+    }
+    private let resultLabel = UILabel().then{
+        $0.text = "수취금액은 1원입니다."
+        $0.font = UIFont(name: "Inter-Regular", size: 24)
+        $0.textColor = .black
+        $0.textAlignment = .right
+    }
     
     override func setUp() {
         view.backgroundColor = .white
     }
     override func addView(){
-        [mainLabel,receiptCountryLabel,remitCountryLabel].forEach{ view.addSubview($0)
+        [mainLabel,receiptCountryLabel,remitCountryLabel,remitCountryValueLabel,receiptCountryValueLabel,resultLabel].forEach{ view.addSubview($0)
         }
     }
     override func setLayout() {
@@ -57,6 +76,18 @@ final class ResultVC: baseVC<ResultReactor>{
         receiptCountryLabel.snp.makeConstraints { make in
             make.top.equalTo(remitCountryLabel.snp.bottom).offset(bottomMargin)
             make.leading.equalTo(remitCountryLabel)
+        }
+        remitCountryValueLabel.snp.makeConstraints { make in
+            make.top.equalTo(remitCountryLabel)
+            make.trailing.equalToSuperview().offset(rightMargin)
+        }
+        receiptCountryValueLabel.snp.makeConstraints { make in
+            make.top.equalTo(receiptCountryLabel)
+            make.trailing.equalToSuperview().offset(rightMargin)
+        }
+        resultLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(receiptCountryValueLabel.snp.bottom).offset(bottomMargin*3)
         }
     }
 }

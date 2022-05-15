@@ -14,12 +14,18 @@ struct Info: Codable {
 }
 
 // MARK: - Query
-struct Query: Codable {
+struct Query: Codable{
     let from: String
     let to: String
     let amount: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case from 
+        case to
+        case amount
+    }
 }
-struct ExchangeRateItem: Codable {
+struct ExchangeRateItem: Codable{
     let success: Bool
     let query: Query
     let info: Info

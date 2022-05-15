@@ -4,7 +4,6 @@ import Moya
 enum ExchangeRateAPI: TargetType{
     case getQuery(query:Query)
     case getInfo
-    
 }
 
 extension ExchangeRateAPI{
@@ -22,7 +21,7 @@ extension ExchangeRateAPI{
         }
     }
     
-    var method: Method{ 
+    var method: Moya.Method{ 
         switch self {
         case .getQuery:
             return .get

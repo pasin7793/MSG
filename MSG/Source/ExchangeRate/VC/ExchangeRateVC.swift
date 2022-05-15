@@ -17,7 +17,6 @@ import RxRelay
 final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     //MARK: -Properties
-
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
@@ -72,13 +71,14 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     }
     
     private let remitCountryValue = UITextField().then{
-        
+        $0.text = "asd"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
     
     private let receiptCountryValue = UITextField().then{
+        $0.text = "asd"
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
@@ -156,6 +156,7 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             case .success(let result):
                 do{
                     self.data = try result.map(ExchangeRateItem.self)
+                    print("asd")
                 } catch(let err){
                     print(err.localizedDescription)
                 }

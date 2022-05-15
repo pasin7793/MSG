@@ -1,8 +1,6 @@
 
 import Moya
 import RxSwift
-import Darwin
-import Foundation
 
 protocol NetworkManagerType: class{
     func fetchExchangeRate(query: Query) -> Single<Response>

@@ -19,12 +19,12 @@ final class ExchangeRateReactor: Reactor,Stepper{
         case setRemitCountry(Country)
         case setReceiptCountry(Country)
         case setRemitAmount(Int)
-        case setExchangeItem(_ exchangeItem: [ExchangeRateItem])
+        case setExchangeItem(_ exchangeItem: [Info])
     }
     struct State{
         var remitCountry: Country
         var receiptCountry: Country
-        var exchangeItems: [ExchangeRateItem]
+        var exchangeItems: [Info]
         var remitAmount: Int
         var isFilled: Bool
     }

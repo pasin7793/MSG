@@ -17,13 +17,13 @@ import RxRelay
 final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     //MARK: -Properties
+    private var info: Info!
     private let mainLabel = UILabel().then{
         $0.text = "환율 계산"
         $0.font = UIFont(name: "Helvetica-bold", size: 28)
         $0.textColor = .black
     }
     private var data: ExchangeRateItem!
-    private var info: Info? = nil
     private let viewModel = ViewModel()
     private let bottomMargin: Int = 32
     private let rightMargin: Int = -80
@@ -153,8 +153,9 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
     }
     override func provide(){
         setControl()
+        //quote: Double(exchangeRateValueLabel.text ?? "") ?? 0)
         provider.request(.exchange(remitCountry: remitCountryValue.text!, receiptCountry: receiptCountryValue.text!, amount: Int(amountValueTextField.text!) ?? 0))
-        { response in
+        { [self] response in
             
             switch response{
             case .success(let result):
@@ -168,6 +169,23 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
             case .failure(let err):
                 print(err.localizedDescription)
             }
+        }
+        provider.request(.getInfo(quote: Double(exchangeRateValueLabel.text ?? "") ?? 0))
+        { [self]  response in
+        
+            switch response{
+            case .success(let result):
+                do{
+                    print(result.response?.statusCode ?? 0)
+                    print(try result.mapJSON())
+                    self.info = try result.map(Info.self)
+                } catch(let err){
+                    print(err.localizedDescription)
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+            
         }
     }
     override func setLayout() {
@@ -230,6 +248,8 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         }
     }
     //MARK: - Reactor
+    
+    
     override func bindView(reactor: ExchangeRateReactor) {
         
         UserDefaults.standard.rx.observe(String.self, UserDefaultsLocal.forKeys.remitCountry)
@@ -269,7 +289,6 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
         provide()
         let str = dateFormatter.string(from: date)
         timeValueLabel.text = str
-        exchangeRateValueLabel.text = "\(info?.quote ?? 0) \(remitCountryValue.text!) / \(receiptCountryValue.text!)"
     }
 }
 
@@ -309,5 +328,10 @@ extension ExchangeRateVC{
             let itemSelected = pickerData[row]
             receiptCountryValue.text = itemSelected
         }
+    }
+}
+extension String {
+    var doubleValue: Double {
+        return Double(self) ?? 0
     }
 }

@@ -17,7 +17,7 @@ extension ExchangeRateAPI{
         switch self {
         case .getQuery(query: let query):
             return "from=\(query)&to=\(query)&amount=\(query)"
-        case .getInfo:
+        case .getInfo(quote: let quote):
             return ""
         case .exchange(remitCountry: let remitCountry, receiptCountry: let receiptCountry, amount: let amount):
             return ""
@@ -28,7 +28,7 @@ extension ExchangeRateAPI{
         switch self {
         case .getQuery:
             return .get
-        case .getInfo:
+        case .getInfo(_):
             return .get
         case .exchange(_, _, _):
             return .get
@@ -41,7 +41,7 @@ extension ExchangeRateAPI{
             return .requestParameters(parameters: [
                 "from": remitCountry,
                 "to": receiptCountry,
-                "amount": amount
+                "amount": amount,
             ], encoding: URLEncoding.queryString)
                 
         case .getInfo(let quote):
@@ -55,7 +55,7 @@ extension ExchangeRateAPI{
     var headers: [String : String]? {
         return [
             "Content-Type": "application/json",
-            "apikey": "0QgtcHeJoGSPjH40Z4FDNZ3MqhjuZO8A"
+            "apikey": "O4Ft7Ypg0IZ39KfpfgAWqDk76gSkvno4"
         ]
     }
     

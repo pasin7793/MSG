@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 
 // MARK: - Info
 struct Info: Decodable {

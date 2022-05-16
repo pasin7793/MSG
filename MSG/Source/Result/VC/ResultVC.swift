@@ -11,6 +11,7 @@ import RxRelay
 final class ResultVC: baseVC<ResultReactor>{
     
     //MARK: -Properties
+
     private var query: Query? = nil
     private var info: Info? = nil
     private let mainLabel = UILabel().then{
@@ -38,14 +39,12 @@ final class ResultVC: baseVC<ResultReactor>{
         $0.textAlignment = .right
     }
     
-    private let remitCountryValueLabel = UITextField().then{
-        $0.text = "ASd"
+    private let remitCountryValueLabel = UILabel().then{
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
     }
-    private let receiptCountryValueLabel = UITextField().then{
-        $0.text = "asd"
+    private let receiptCountryValueLabel = UILabel().then{
         $0.font = UIFont(name: "SFPro-Regular", size: 16)
         $0.textColor = .black
         $0.textAlignment = .right
@@ -59,8 +58,7 @@ final class ResultVC: baseVC<ResultReactor>{
     
     override func setUp() {
         view.backgroundColor = .white
-        remitCountryValueLabel.text = query?.from
-        receiptCountryValueLabel.text = query?.to
+        remitCountryValueLabel.text = "\(query?.from ?? "")입니다"
         resultLabel.text = "수취금액은 \(String(info?.quote ?? 0))원 입니다"
     }
     override func addView(){

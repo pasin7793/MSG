@@ -170,22 +170,14 @@ final class ExchangeRateVC: baseVC<ExchangeRateReactor>,UITextFieldDelegate, UIP
                 print(err.localizedDescription)
             }
         }
-        provider.request(.getInfo(quote: Double(exchangeRateValueLabel.text ?? "") ?? 0))
-        { [self]  response in
-        
-            switch response{
-            case .success(let result):
-                do{
-                    print(result.response?.statusCode ?? 0)
-                    print(try result.mapJSON())
-                    self.info = try result.map(Info.self)
-                } catch(let err){
-                    print(err.localizedDescription)
-                }
-            case .failure(let err):
+        provider.request(.getInfo) { (result) in
+            switch result{
+            case let .success(response):
+                let result = try? response.map(ExchangeRateItem.self)
+                self.exchangeRateValueLabel.text = "\(String(describing: result?.info.quote))"
+            case let .failure(err):
                 print(err.localizedDescription)
             }
-            
         }
     }
     override func setLayout() {
@@ -328,10 +320,5 @@ extension ExchangeRateVC{
             let itemSelected = pickerData[row]
             receiptCountryValue.text = itemSelected
         }
-    }
-}
-extension String {
-    var doubleValue: Double {
-        return Double(self) ?? 0
     }
 }
